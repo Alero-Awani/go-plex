@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:14.5
+          envFrom:
+            - configMapRef:
+                name: postgres-secret
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            # - name: postgres-data
+            #   mountPath: /var/lib/postgresql/data
+            - name: create-tables-sql-volume
+              mountPath: /docker-entrypoint-initdb.d/create_tables.sql
+              subPath: create_tables.sql
+      volumes:
+        # - name: postgres-data
+        #   persistentVolumeClaim:
+        #     claimName: postgres-pvc
+        # - name: postgres-data
+        #   configMap:
+        #     name: postgres-data-config
+        - name: create-tables-sql-volume
+          configMap:
+            name: create-tables-sql-config

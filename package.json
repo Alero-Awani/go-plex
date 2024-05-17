@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "vite & cd ./src/api && go build && ./api",
+    "dev": "vite",
     "build": "tsc && vite build & cd ./src/api && go build",
     "serve": "vite preview & cd ./src/api && go build && ./api",
     "preview": "tsc && vite build && vite preview & cd ./src/api && go build && ./api",
@@ -51,5 +51,9 @@
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
-  }
+  },
+  "description": "<div align=center>",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }

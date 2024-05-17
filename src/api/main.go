@@ -13,8 +13,6 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 const port = 8080
@@ -33,17 +31,17 @@ type application struct {
 }
 
 func main() {
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	api_key := os.Getenv("TMDB_API_KEY")
 
 	// set application config
 	var app application
 
 	// read from cmdline
-	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=goplex sslmode=disable timezone=UTC connect_timeout=10", "Postgres Connection String")
+	flag.StringVar(&app.DSN, "dsn", "host=postgres port=5432 user=postgres password=postgres dbname=goplex sslmode=disable timezone=UTC connect_timeout=10", "Postgres Connection String")
 	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")

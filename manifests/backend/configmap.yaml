@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-plex-config
+data:
+  .env: |
+    TMDB_API_KEY="123456"

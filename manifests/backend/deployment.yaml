@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-plex-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-plex
+  template:
+    metadata:
+      labels:
+        app: go-plex
+    spec:
+      containers:
+        - name: go-plex-container
+          image: aleroawani/go-plex-backend:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/go-plex/.env
+              subPath: .env
+      volumes:
+        - name: config-volume
+          configMap:
+            name: go-plex-config
