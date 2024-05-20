@@ -7,7 +7,7 @@ COPY package.json vite.config.ts ./
 
 
 # Install all the packages 
-RUN npm i
+RUN npm i --no-optional 
 
 RUN npm install typescript
 

@@ -1,5 +1,5 @@
 # build stage 
-FROM golang:alpine AS builder 
+FROM golang:1.21.6-alpine AS builder 
 
 # Set the working directory 
 WORKDIR /app/go-plex
@@ -16,14 +16,16 @@ COPY ./src/graphql ./src/graphql
 #BUILD THE Go application
 RUN go build -o api 
 
-# # the run stage
-# FROM scratch
+EXPOSE 8080
 
-# # Set the working directory 
-# WORKDIR /app
+# the run stage
+FROM scratch
 
-# # Copy the binary from the build stage
-# COPY --from=builder /app .
+# Set the working directory 
+WORKDIR /app/go-plex
+
+# Copy the binary from the build stage
+COPY --from=builder /app/go-plex .
 
 EXPOSE 8080
 

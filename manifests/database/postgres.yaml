@@ -1,0 +1,264 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2024-05-20T15:27:03Z"
+  generateName: psql-test-postgresql-
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: psql-test
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.3.0
+    controller-revision-hash: psql-test-postgresql-5c7668df9c
+    helm.sh/chart: postgresql-15.3.3
+    statefulset.kubernetes.io/pod-name: psql-test-postgresql-0
+  name: psql-test-postgresql-0
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: psql-test-postgresql
+    uid: 4724e4ec-4881-48a3-93b2-f33c7203d309
+  resourceVersion: "422168"
+  uid: 937ad30b-f148-48b5-bf91-06b53de6273a
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: primary
+              app.kubernetes.io/instance: psql-test
+              app.kubernetes.io/name: postgresql
+          topologyKey: kubernetes.io/hostname
+        weight: 1
+  automountServiceAccountToken: false
+  containers:
+  - env:
+    - name: BITNAMI_DEBUG
+      value: "false"
+    - name: POSTGRESQL_PORT_NUMBER
+      value: "5432"
+    - name: POSTGRESQL_VOLUME_DIR
+      value: /bitnami/postgresql
+    - name: PGDATA
+      value: /bitnami/postgresql/data
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: postgres-password
+          name: psql-test-postgresql
+    - name: POSTGRESQL_ENABLE_LDAP
+      value: "no"
+    - name: POSTGRESQL_ENABLE_TLS
+      value: "no"
+    - name: POSTGRESQL_LOG_HOSTNAME
+      value: "false"
+    - name: POSTGRESQL_LOG_CONNECTIONS
+      value: "false"
+    - name: POSTGRESQL_LOG_DISCONNECTIONS
+      value: "false"
+    - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+      value: "off"
+    - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+      value: error
+    - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+      value: pgaudit
+    image: docker.io/bitnami/postgresql:16.3.0-debian-12-r6
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -c
+        - exec pg_isready -U "postgres" -h 127.0.0.1 -p 5432
+      failureThreshold: 6
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: postgresql
+    ports:
+    - containerPort: 5432
+      name: tcp-postgresql
+      protocol: TCP
+    readinessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -c
+        - -e
+        - |
+          exec pg_isready -U "postgres" -h 127.0.0.1 -p 5432
+          [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+      failureThreshold: 6
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      limits:
+        cpu: 150m
+        ephemeral-storage: 1Gi
+        memory: 192Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 50Mi
+        memory: 128Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1001
+      runAsNonRoot: true
+      runAsUser: 1001
+      seLinuxOptions: {}
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /tmp
+      name: empty-dir
+      subPath: tmp-dir
+    - mountPath: /opt/bitnami/postgresql/conf
+      name: empty-dir
+      subPath: app-conf-dir
+    - mountPath: /opt/bitnami/postgresql/tmp
+      name: empty-dir
+      subPath: app-tmp-dir
+    - mountPath: /dev/shm
+      name: dshm
+    - mountPath: /bitnami/postgresql
+      name: data
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: psql-test-postgresql-0
+  initContainers:
+  - command:
+    - /bin/sh
+    - -ec
+    - |
+      chown 1001:1001 /bitnami/postgresql
+      mkdir -p /bitnami/postgresql/data
+      chmod 700 /bitnami/postgresql/data
+      find /bitnami/postgresql -mindepth 1 -maxdepth 1 -not -name "conf" -not -name ".snapshot" -not -name "lost+found" | \
+        xargs -r chown -R 1001:1001
+      chmod -R 777 /dev/shm
+    image: docker.io/bitnami/os-shell:12-debian-12-r21
+    imagePullPolicy: IfNotPresent
+    name: init-chmod-data
+    resources:
+      limits:
+        cpu: 150m
+        ephemeral-storage: 1Gi
+        memory: 192Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 50Mi
+        memory: 128Mi
+    securityContext:
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+      seLinuxOptions: {}
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /tmp
+      name: empty-dir
+      subPath: tmp-dir
+    - mountPath: /bitnami/postgresql
+      name: data
+    - mountPath: /dev/shm
+      name: dshm
+  nodeName: minikube
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: Always
+  serviceAccount: psql-test-postgresql
+  serviceAccountName: psql-test-postgresql
+  subdomain: psql-test-postgresql-hl
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: data-psql-test-postgresql-0
+  - emptyDir: {}
+    name: empty-dir
+  - emptyDir:
+      medium: Memory
+    name: dshm
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-05-20T15:28:34Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-05-20T15:30:45Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-05-20T15:30:45Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-05-20T15:27:05Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://c92bd7d2bd90a4a8e4d99c9e1802c52da6170ce2f66cc34697208743bfa3e779
+    image: bitnami/postgresql:16.3.0-debian-12-r6
+    imageID: docker-pullable://bitnami/postgresql@sha256:6b7ea9d12058021fac66d4bf85bcdfd0601dce9abdba8d4187a2d5f485e25df7
+    lastState: {}
+    name: postgresql
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-05-20T15:30:28Z"
+  hostIP: 192.168.49.2
+  initContainerStatuses:
+  - containerID: docker://8e457f1fa87189869f1b703712e0eae0683ea5025021b47f328a914b83c9da42
+    image: bitnami/os-shell:12-debian-12-r21
+    imageID: docker-pullable://bitnami/os-shell@sha256:8476580fde78f39d88db567033f6f12d6d2315bf7498aa3a77351ed289c7b3d6
+    lastState: {}
+    name: init-chmod-data
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://8e457f1fa87189869f1b703712e0eae0683ea5025021b47f328a914b83c9da42
+        exitCode: 0
+        finishedAt: "2024-05-20T15:28:33Z"
+        reason: Completed
+        startedAt: "2024-05-20T15:28:33Z"
+  phase: Running
+  podIP: 10.244.0.56
+  podIPs:
+  - ip: 10.244.0.56
+  qosClass: Burstable
+  startTime: "2024-05-20T15:27:05Z"

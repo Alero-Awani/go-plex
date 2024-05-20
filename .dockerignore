@@ -1,1 +1,16 @@
 node_modules
+.github
+.husky
+helm 
+internals 
+manifests 
+.editorconfig
+.gitignore 
+*.Dockerfile
+docker-compose.yml
+go.*
+*.md
+LICENSE
+db
+npm-debug.log
+

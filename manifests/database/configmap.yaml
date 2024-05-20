@@ -10,3 +10,76 @@ data:
         created_at timestamp without time zone,
         updated_at timestamp without time zone
     );
+
+    ALTER TABLE public.genres
+    ALTER COLUMN id
+    ADD GENERATED ALWAYS AS IDENTITY (
+        SEQUENCE NAME public.genres_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1
+    );
+
+    INSERT INTO public.genres (genre, created_at, updated_at)
+    VALUES (
+        'Comedy',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Sci-Fi',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Horror',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Romance',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Action',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Thriller',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Drama',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Mystery',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Crime',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Animation',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Adventure',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Fantasy',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    ),
+    (
+        'Superhero',
+        '2022-09-23 00:00:00',
+        '2022-09-23 00:00:00'
+    );
