@@ -87,21 +87,39 @@ HELM CHART FOR GOLANG APPLICATION
 
 1. Handle Backend Configmap - this should actually be handled as a secret but will be taken care of when deployed to aws.
 2. `helm install backend ./go-app`
-3. `helm uninstal backend`
+3. `helm uninstall backend`
 
 HELM CHART FOR DATABASE 
 1. Use an already existing helm chart and modify it, Use the Bitnami Helm Chart 
 2. `helm repo add bitnami https://charts.bitnami.com/bitnami`
 3. `helm repo update`
-4. Create Pv and Pvc and values.yaml file files 
-5. `helm install psql-test bitnami/postgresql --set persistence.existingClaim=postgresql-pv-claim --set volumePermissions.enabled=true --set postgresql.service.name=postgres -f values.yaml`
+4. Create Pv and Pvc and values.yaml file files - `k apply -f postgres-pv.yaml, postgres-pvc.yaml`
+5. - helm install without pv, because it seems the chart still creates its own pv and pvc regardless. 
+`helm install psql-test bitnami/postgresql -f values.yaml`
+
 5. To connect to your database from outside the cluster execute the following commands:
 ```sh
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace default psql-test-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 ```
+- get the default password `echo $POSTGRES_PASSWORD`
+
 6. Inspect bitnami chart 
 `kubectl get -o yaml pod psql-test-postgresql-0 > postgres.yaml`             
 7. Uninstall chart `helm uninstall psql-test bitnami/postgresql`
+8. Delete chart resources `helm delete psql-test `
 8. get the postgres service in yaml 
 `kubectl get -o yaml svc psql-test-postgresql > bitnami-service.yaml`
-9. Override bitname service name to `postgres` so it can connect to the backend 
+9. Override bitname service name to `postgres` so it can connect to the backend- did this by just changing it in the bitnami-service.yaml file. This is done manually because bitnami helm doesnt yet support service nameOverride  then 
+10. Delete service and create new one 
+`k delete svc psql-test-postgresql`
+`k create -f bitnami-service.yaml`
+11. To view default values `helm show values bitnami/postgresql`
+12. Test database `kubectl exec -it psql-test-postgresql-0 -- env PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -p 5432`
+- \l, \c goplex , \dt 
+12. if you get an error of password for user postgres, it is most likely related to pv,pvc 
+
+
+
+PGPASSWORD=$POSTGRES_PASSWORD psql -u postgres --host postgresql -e "ALTER USER postgres with password=$POSTGRES_NEW_PASSWORD'
+
+kubectl exec -it psql-test-postgresql-0 -- env PGPASSWORD=$POSTGRES_PASSWORD psql -h psql-test-postgresql -U postgres -p 5432

@@ -1,0 +1,52 @@
+global:
+  postgresql:
+    auth:
+      postgresDatabase: "goplex"
+      postgresPassword: "postgres"
+
+persistence:
+  enabled: true
+  existingClaim: postgresql-pv-claim
+
+volumePermissions:
+  enabled: true
+
+primary:
+  initdb:
+    scripts:
+      init.sql: |
+        CREATE DATABASE "goplex";
+        \c goplex
+        CREATE TABLE "public.genres" (
+          id serial PRIMARY KEY,
+          genre VARCHAR(255),
+          created_at TIMESTAMP,
+          updated_at TIMESTAMP
+        );
+        \c goplex
+        ALTER TABLE "public.genres"
+        ALTER COLUMN id
+        ADD GENERATED ALWAYS AS IDENTITY (
+          SEQUENCE NAME public.genres_id_seq
+          START WITH 1
+          INCREMENT BY 1
+          NO MINVALUE
+          NO MAXVALUE
+          CACHE 1
+        );
+        \c goplex 
+        INSERT INTO "public.genres" (genre, created_at, updated_at)
+        VALUES
+          ('Comedy', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Sci-Fi', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Horror', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Romance', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Action', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Thriller', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Drama', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Mystery', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Crime', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Animation', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Adventure', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Fantasy', '2022-09-23 00:00:00', '2022-09-23 00:00:00'),
+          ('Superhero', '2022-09-23 00:00:00', '2022-09-23 00:00:00');
