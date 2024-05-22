@@ -1,4 +1,0 @@
-postgresql:
-  postgresqlDatabase: goplex
-  postgresqlUsername: postgres
-  postgresqlPassword: postgres

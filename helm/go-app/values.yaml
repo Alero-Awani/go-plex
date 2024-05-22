@@ -90,3 +90,30 @@ configmap:
   values:
     .env: |
       TMDB_API_KEY="123456"
+
+env:
+  - name: PGHOST
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: PGHOST
+  - name: PGPORT
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: PGPORT
+  - name: PGUSER
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: PGUSER
+  - name: PGPASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: PGPASSWORD
+  - name: PGDATABASE
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: PGDATABASE

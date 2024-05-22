@@ -36,12 +36,18 @@ func main() {
 	// 	log.Fatal("Error loading .env file")
 	// }
 	api_key := os.Getenv("TMDB_API_KEY")
+	host := os.Getenv("PGHOST")
+	port := os.Getenv("PGPORT")
+	user := os.Getenv("PGUSER")
+	password := os.Getenv("PGPASSWORD")
+	dbname := os.Getenv("PGDATABASE")
 
 	// set application config
 	var app application
 
+
 	// read from cmdline
-	flag.StringVar(&app.DSN, "dsn", "host=postgres port=5432 user=postgres password=postgres dbname=goplex sslmode=disable timezone=UTC connect_timeout=10", "Postgres Connection String")
+	// flag.StringVar(&app.DSN, "dsn", "host=postgres port=5432 user=postgres password=postgres dbname=goplex sslmode=disable timezone=UTC connect_timeout=10", "Postgres Connection String")
 	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "example.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "example.com", "signing audience")
@@ -50,6 +56,9 @@ func main() {
 	flag.StringVar(&app.APIKey, "api-key", api_key, "api key")
 	flag.Parse()
 
+	// Construct the DSN using environment variables 
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable timezone=UTC connect_timeout=10", host, port, user, password, dbname)
+	app.DSN = dsn
 	// connect to db
 	conn, err := app.connectToDB()
 	if err != nil {
@@ -73,14 +82,15 @@ func main() {
 		// CookieDomain:  app.CookieDomain,
 	}
 
-	log.Printf("Starting server on port %d", port)
+	log.Printf("Starting server on port %s", port)
 
 	// start a web server
-	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())
+	err = http.ListenAndServe(fmt.Sprintf(":%s", port), app.routes())
 	if err != nil {
 		log.Fatal(err)
 	}
 }
+
 
 func (app *application) getPoster(movie models.Movie) models.Movie {
 	type TheMovieDB struct {

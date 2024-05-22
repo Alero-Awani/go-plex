@@ -117,9 +117,27 @@ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default psql-test-post
 12. Test database `kubectl exec -it psql-test-postgresql-0 -- env PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -p 5432`
 - \l, \c goplex , \dt 
 12. if you get an error of password for user postgres, it is most likely related to pv,pvc 
+13. Use `initdb` to create database and initialise tables(pass in sql)
 
 
+TODO
+1. Find a way to abstract the postgres connection from the main.go file 
+2. find a way to change the service name to connect to, this can be done through abstraction, maybe if they are passed as environment variables, so that it can easilt be changed.
+3. Also see if its possible to contribute to helm chart repo for those who might need it, no harm in trying 
 
-PGPASSWORD=$POSTGRES_PASSWORD psql -u postgres --host postgresql -e "ALTER USER postgres with password=$POSTGRES_NEW_PASSWORD'
+export PGHOST="localhost"
+export PGPORT="5432"
+export PGUSER="postgres"
+export PGPASSWORD="postgres"
+export PGDATABASE="goplex"
 
-kubectl exec -it psql-test-postgresql-0 -- env PGPASSWORD=$POSTGRES_PASSWORD psql -h psql-test-postgresql -U postgres -p 5432
+`docker build -t aleroawani/go-plex-backend:latest`
+
+- Mount these environemnt variables as env secrets in the backend helm chart 
+- create secret.yaml file for backend 
+- add env to values.yaml 
+
+**Create github Action workflow to build and push docker image to ECR**
+With this workflow,you can automate the process of building your Docker images whenever changes are pushed to your repository. This ensures that your images are always up-to-date with the latest changes in your codebase.
+
+- Here focus on the best practices for building and versioning the docker image.

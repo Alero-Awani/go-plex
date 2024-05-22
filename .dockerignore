@@ -2,13 +2,13 @@ node_modules
 .github
 .husky
 helm 
-internals 
+#internals 
 manifests 
 .editorconfig
 .gitignore 
 *.Dockerfile
 docker-compose.yml
-go.*
+# go.*
 *.md
 LICENSE
 db
